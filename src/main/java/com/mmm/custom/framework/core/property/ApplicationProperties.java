@@ -7,4 +7,8 @@ public class ApplicationProperties {
 
     @PropertyValue(propertyName = "application.name")
     private String applicationName;
+
+    public String getApplicationName() {
+        return applicationName;
+    }
 }

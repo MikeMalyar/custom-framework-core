@@ -4,11 +4,14 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public final class ReflectionAPIUtils {
@@ -17,7 +20,8 @@ public final class ReflectionAPIUtils {
 
     public static List<Class<?>> fetchClassesFromPackage(String packageName) {
 
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(packageName.replace(".", "/"));
+        InputStream inputStream = ClassLoader.
+                getSystemResourceAsStream(packageName.replace(".", "/"));
 
         if (inputStream != null) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -40,7 +44,7 @@ public final class ReflectionAPIUtils {
              Class<? extends java.lang.annotation.Annotation> annotationClass) {
         List<Class<?>> allClasses = fetchClassesFromPackage(packageName);
         return allClasses.stream()
-                .filter(clazz -> clazz.isAnnotationPresent(annotationClass))
+                .filter(clazz -> hasAnnotation(clazz, annotationClass))
                 .collect(Collectors.toList());
     }
 
@@ -74,6 +78,26 @@ public final class ReflectionAPIUtils {
                 | IllegalAccessException e) {
             return null;
         }
+    }
+
+    public static <T> boolean updateObjectFieldMarkedWithAnnotation(Object object,
+            Class<? extends java.lang.annotation.Annotation> annotationClass, Function<Field, T> valueFunction)
+            throws IllegalAccessException {
+        Class<?> clazz = object.getClass();
+        boolean hasUpdated = false;
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.isAnnotationPresent(annotationClass)) {
+                field.setAccessible(true);
+                field.set(object, valueFunction.apply(field));
+                hasUpdated = true;
+            }
+        }
+        return hasUpdated;
+    }
+
+    public static boolean hasAnnotation(Class<?> clazz,
+                                        Class<? extends java.lang.annotation.Annotation> annotationClass) {
+        return clazz.isAnnotationPresent(annotationClass);
     }
 
     public static Class<?> getClassByName(String classFileName, String packageName) {
