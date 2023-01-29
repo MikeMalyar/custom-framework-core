@@ -80,18 +80,25 @@ public final class ReflectionAPIUtils {
         }
     }
 
-    public static <T> boolean updateObjectFieldMarkedWithAnnotation(Object object,
+    public static <T> boolean updateObjectFieldsMarkedWithAnnotation(Object object,
+             Class<? extends java.lang.annotation.Annotation> annotationClass, Function<Field, T> valueFunction)
+            throws IllegalAccessException {
+        return updateObjectFieldsMarkedWithAnnotation(object, object.getClass(), annotationClass, valueFunction);
+    }
+
+    public static <T> boolean updateObjectFieldsMarkedWithAnnotation(Object object, Class<?> objectClass,
             Class<? extends java.lang.annotation.Annotation> annotationClass, Function<Field, T> valueFunction)
             throws IllegalAccessException {
-        Class<?> clazz = object.getClass();
         boolean hasUpdated = false;
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(annotationClass)) {
-                field.setAccessible(true);
-                field.set(object, valueFunction.apply(field));
-                hasUpdated = true;
+        do {
+            for (Field field : objectClass.getDeclaredFields()) {
+                if (field.isAnnotationPresent(annotationClass)) {
+                    field.setAccessible(true);
+                    field.set(object, valueFunction.apply(field));
+                    hasUpdated = true;
+                }
             }
-        }
+        } while ((objectClass = objectClass.getSuperclass()) != Object.class);
         return hasUpdated;
     }
 

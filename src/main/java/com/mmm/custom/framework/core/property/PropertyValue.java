@@ -10,4 +10,6 @@ import java.lang.annotation.Target;
 public @interface PropertyValue {
 
     String propertyName() default "";
+
+    String defaultValue() default "";
 }
