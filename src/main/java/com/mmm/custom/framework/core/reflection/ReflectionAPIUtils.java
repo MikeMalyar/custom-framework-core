@@ -107,6 +107,13 @@ public final class ReflectionAPIUtils {
         return clazz.isAnnotationPresent(annotationClass);
     }
 
+    public static List<Constructor> getConstructorsMarkedWithAnnotation(Class<?> clazz,
+            Class<? extends java.lang.annotation.Annotation> annotationClass) {
+        return Arrays.stream(clazz.getConstructors())
+                .filter(constructor -> constructor.isAnnotationPresent(annotationClass))
+                .collect(Collectors.toList());
+    }
+
     public static Class<?> getClassByName(String classFileName, String packageName) {
         try {
             return Class.forName(packageName + "." + classFileName.substring(0, classFileName.lastIndexOf(".")));
