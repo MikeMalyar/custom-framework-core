@@ -4,6 +4,7 @@ import com.mmm.custom.framework.core.configuration.annotations.Component;
 import com.mmm.custom.framework.core.configuration.annotations.EnableComponentPostProcessing;
 import com.mmm.custom.framework.core.configuration.annotations.dependency.InjectComponents;
 import com.mmm.custom.framework.core.configuration.components.ComponentBean;
+import com.mmm.custom.framework.core.configuration.components.scanner.ComponentScanner;
 import com.mmm.custom.framework.core.configuration.post.processors.ComponentPostProcessor;
 import com.mmm.custom.framework.core.exception.CircularDependencyException;
 import com.mmm.custom.framework.core.exception.ComponentInitializationException;
@@ -18,12 +19,13 @@ import static com.mmm.custom.framework.core.utils.LoggingUtils.*;
 
 public class ComponentFactory {
 
-    private static final String DEFAULT_PACKAGE_TO_SCAN = "com.mmm.custom.framework.core";
-
     private Map<Class<?>, ComponentBean> componentBeans;
+
+    private ComponentScanner componentScanner;
 
     public ComponentFactory() {
         componentBeans = new HashMap<>();
+        componentScanner = new ComponentScanner();
     }
 
     public void init(String ...rootPackageNames) {
@@ -54,17 +56,8 @@ public class ComponentFactory {
     private void initializeAllComponents(String ...rootPackageNames) {
         log("Started components initialization");
 
-        List<String> packagesToScan = new ArrayList<>();
-        packagesToScan.add(DEFAULT_PACKAGE_TO_SCAN);
-        packagesToScan.addAll(Arrays.asList(rootPackageNames));
-
-        List<Class<?>> allClasses = new ArrayList<>();
-        for (String rootPackageName: packagesToScan) {
-            allClasses.addAll(ReflectionAPIUtils.fetchClassesFromPackageMarkedWithAnnotation(rootPackageName,
-                    Component.class));
-        }
         try {
-            Map<Integer, List<Class<?>>> dependencyTree = buildDependencyTree(allClasses);
+            Map<Integer, List<Class<?>>> dependencyTree = buildDependencyTree(componentScanner.scan(rootPackageNames));
 
             log("Dependency tree >> ");
             for (int i = 0; i < dependencyTree.size(); ++i) {

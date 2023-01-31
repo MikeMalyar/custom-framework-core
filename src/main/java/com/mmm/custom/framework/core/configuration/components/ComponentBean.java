@@ -53,7 +53,8 @@ public class ComponentBean {
     @Override
     public String toString() {
         return "ComponentBean{" +
-                "componentClass=" + componentClass +
+                "id='" + id + '\'' +
+                "; componentClass=" + componentClass +
                 '}';
     }
 
