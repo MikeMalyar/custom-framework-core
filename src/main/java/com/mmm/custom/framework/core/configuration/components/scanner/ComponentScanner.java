@@ -1,6 +1,6 @@
 package com.mmm.custom.framework.core.configuration.components.scanner;
 
-import com.mmm.custom.framework.core.configuration.annotations.Component;
+import com.mmm.custom.framework.core.configuration.annotations.component.Component;
 import com.mmm.custom.framework.core.reflection.ReflectionAPIUtils;
 
 import java.util.ArrayList;

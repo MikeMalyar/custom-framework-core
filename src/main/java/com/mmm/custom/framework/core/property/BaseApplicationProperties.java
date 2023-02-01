@@ -1,6 +1,6 @@
 package com.mmm.custom.framework.core.property;
 
-import com.mmm.custom.framework.core.configuration.annotations.Component;
+import com.mmm.custom.framework.core.configuration.annotations.component.Component;
 
 import java.io.IOException;
 import java.io.InputStream;

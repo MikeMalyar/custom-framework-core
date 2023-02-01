@@ -1,6 +1,6 @@
 package com.mmm.custom.framework.core.configuration.post.processors.property;
 
-import com.mmm.custom.framework.core.configuration.annotations.Component;
+import com.mmm.custom.framework.core.configuration.annotations.component.Component;
 import com.mmm.custom.framework.core.configuration.annotations.EnableComponentPostProcessing;
 import com.mmm.custom.framework.core.configuration.post.processors.ComponentPostProcessor;
 import com.mmm.custom.framework.core.exception.PropertyNotAccessibleException;

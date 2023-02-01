@@ -1,6 +1,6 @@
 package com.mmm.custom.framework.core.configuration.components.factory;
 
-import com.mmm.custom.framework.core.configuration.annotations.Component;
+import com.mmm.custom.framework.core.configuration.annotations.component.Component;
 import com.mmm.custom.framework.core.configuration.annotations.EnableComponentPostProcessing;
 import com.mmm.custom.framework.core.configuration.annotations.dependency.InjectComponents;
 import com.mmm.custom.framework.core.configuration.components.ComponentBean;
@@ -72,6 +72,13 @@ public class ComponentFactory {
                         Object instance = ReflectionAPIUtils.initializeObjectByClass(clazz);
                         if (instance != null) {
                             componentBean.setInstance(instance);
+                            try {
+                                componentBean.setConstructorToInitialize(clazz.getDeclaredConstructor());
+                            } catch (NoSuchMethodException e) {
+                                throw new ComponentInitializationException(String
+                                        .format("Component %s has no default constructor so cannot be instantiated",
+                                                clazz.getName()));
+                            }
                         } else {
                             throw new ComponentInitializationException(
                                     String.format("Component %s has no default constructor so cannot be instantiated",
@@ -85,6 +92,15 @@ public class ComponentFactory {
                         Object instance = ReflectionAPIUtils.initializeObjectByClass(clazz, parameters, values);
                         if (instance != null) {
                             componentBean.setInstance(instance);
+                            try {
+                                componentBean.setConstructorToInitialize(
+                                        clazz.getConstructor(parameters.toArray(new Class<?>[0])));
+                                componentBean.setConstructorValues(values.toArray(new Object[0]));
+                            } catch (NoSuchMethodException e) {
+                                throw new ComponentInitializationException(String
+                                        .format("Component %s has no default constructor so cannot be instantiated",
+                                                clazz.getName()));
+                            }
                         } else {
                             throw new ComponentInitializationException(
                                     String.format("Component %s cannot be instantiated with provided constructor",

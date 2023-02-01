@@ -1,4 +1,4 @@
-package com.mmm.custom.framework.core.configuration.annotations;
+package com.mmm.custom.framework.core.configuration.annotations.component;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,4 +10,6 @@ import java.lang.annotation.Target;
 public @interface Component {
 
     String id() default "";
+
+    ComponentStrategy strategy() default ComponentStrategy.SINGLETON;
 }
